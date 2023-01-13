@@ -5,8 +5,15 @@ import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.get
+import com.example.demoapplication.databinding.ActivityMainBinding
+import com.example.demoapplication.response.BaseResponse
+import com.example.demoapplication.viewmodel.MainViewModel
 import java.time.Instant
 import java.time.LocalTime
 import java.time.OffsetDateTime
@@ -15,37 +22,52 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 
-class MainActivity : AppCompatActivity(),TestCallbackInterface{
+class MainActivity : AppCompatActivity(),MainViewModel.Validate{
 
-    lateinit var callbackTestClass:CallbackTestClass
+    private lateinit var binding:ActivityMainBinding
+    private val viewModel by viewModels<MainViewModel>()
 
     @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        getIstTime()
-        callbackTestClass = CallbackTestClass()
-        callbackTestClass.start(this)
+
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
+
+        binding.button2.setOnClickListener {
+
+            viewModel.loginUser(
+                binding.editTextPassword.text.toString(),
+                binding.editTextTextEmailAddress.text.toString(),
+                this
+            )
+        }
+
+        viewModel.loginResult.observe(this){
+            when (it){
+                is BaseResponse.Error->{
+                    Toast.makeText(this,it.msg,Toast.LENGTH_SHORT).show()
+                }
+                is BaseResponse.Success->{
+                    Toast.makeText(this, it.data!!.message,Toast.LENGTH_SHORT).show()
+                }
+                else->{
+                    Toast.makeText(this,"nai ho raha",Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun getIstTime(){
-
-        val millis = 1667370474000L
-        val instant: Instant = Instant.ofEpochMilli(millis)
-        val odt: OffsetDateTime = OffsetDateTime.ofInstant(instant, ZoneOffset.UTC)
-        val lt: LocalTime = odt.toLocalTime()
-        val time = lt.format(DateTimeFormatter.ISO_LOCAL_TIME)
-        val output: String = time.substring(0, 5)
-        Log.e("checknew",output)
+    override fun invalidEmail() {
+        Toast.makeText(this,"Invalid Email",Toast.LENGTH_SHORT).show()
     }
 
-    override fun start() {
-        Log.e("start","Start is called by callback")
+    override fun invalidPassword() {
+        TODO("Not yet implemented")
     }
 
-    override fun stop() {
-        Log.e("start","stop is called by callback")
-    }
+
 }
+
