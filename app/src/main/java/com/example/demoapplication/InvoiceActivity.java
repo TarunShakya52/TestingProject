@@ -7,8 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
 import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
@@ -16,26 +14,22 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.print.PrintAttributes;
-import android.print.PrintDocumentAdapter;
-import android.print.PrintJob;
-import android.print.PrintJobInfo;
-import android.print.PrintManager;
-import android.print.PrinterInfo;
-import android.printservice.PrinterDiscoverySession;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
-import com.example.demoapplication.Adapter.PdfPrintDocumentAdapter;
+import com.example.demoapplication.api.PostRequest;
+import com.example.demoapplication.response.DataInvoiceKit;
+import com.example.demoapplication.response.KitInvoiceResponse;
 import com.example.tscdll.TSCUSBActivity;
 import com.github.barteksc.pdfviewer.PDFView;
 import com.google.android.material.button.MaterialButton;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.geom.PageSize;
@@ -54,11 +48,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.net.Socket;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Objects;
 public class InvoiceActivity extends AppCompatActivity {
 
@@ -68,7 +59,7 @@ public class InvoiceActivity extends AppCompatActivity {
     String pdfPath;
     File file;
     Uri uri;
-//    Boolean checkForHeaders = true;
+    Boolean checkForHeaders = true;
     Boolean checkForHeaders2 = true;
     private static UsbDevice device;
     private static UsbManager mUsbManager;
@@ -89,6 +80,8 @@ public class InvoiceActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_invoice);
 //        layout = findViewById(R.id.layoutLinearView);
+
+        kitInvoiceApi();
 
         tscusbActivity = new TSCUSBActivity();
 
@@ -120,11 +113,7 @@ public class InvoiceActivity extends AppCompatActivity {
         }
 
         btnPrintPDF = findViewById(R.id.btnPrintPDF);
-        try{
-            createPDF();
-        }catch (FileNotFoundException e){
-            e.printStackTrace();
-        }
+
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             mPermissionIntent = PendingIntent.getBroadcast(this, 0,  new Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_MUTABLE);
@@ -176,6 +165,45 @@ public class InvoiceActivity extends AppCompatActivity {
         });
     }
 
+    private void kitInvoiceApi() {
+
+        PostRequest aTask = new PostRequest(this);
+        aTask.setListener(new PostRequest.MyAsyncTaskListener() {
+            @Override
+            public void onPreExecuteConcluded() {
+                //Loader Will come here
+            }
+
+            @Override
+            public void onPostExecuteConcluded(String result) {
+
+                Log.d("ResultCheck", "=" + result);
+                try {
+                    if (result != null) {
+                        GsonBuilder gsonBuilder = new GsonBuilder();
+                        gsonBuilder.setDateFormat("M/d/yy hh:mm a");
+                        Gson gson = gsonBuilder.create();
+                        KitInvoiceResponse response = gson.fromJson(result, KitInvoiceResponse.class);
+                        try{
+                            createPDF(response.getData());
+                        }catch (FileNotFoundException e){
+                            e.printStackTrace();
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+
+
+                }
+
+            }
+        });
+
+        String token ="eyJhbGciOiJIUzM4NCIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIwZDA0NTQyMS0zMmYxLTQyYjYtYjA1MC04YjY1MDNmMDljMzAiLCJpZCI6MjExLCJtb2JpbGUiOiI4MDg4NDAzNDMyIiwicm9sZSI6IkFETUlOIiwicGVybWlzc2lvbnMiOlsidm1fYWxsb3dlZCIsInByb2R1Y3RfYWxsb3dlZCIsIm9yZGVyc19hbGxvd2VkIiwidXNlcl9hbGxvd2VkIiwidm1fc2V0dGluZ3MiLCJ2bV9zYWxlcyIsIm5vdGlmaWNhdGlvbl9lbmFibGVkIiwiYWJzb2x1dGVfc2FsZXMiLCJ2ZW5kb3JfYWxsb3dlZCIsIndhbGxldF9oaXN0b3J5Iiwidmlld19icmFuZHMiLCJjcmVhdGVfYnJhbmQiLCJ2aWV3X2Jhc2UiLCJ2aWV3X3ZhcmlhbnRzIiwibWFwX3ZlbmRvciIsInZpZXdfcHJvZHVjdHMiLCJjcmVhdGVfcHJvZHVjdHMiLCJjcmVhdGVfYmFzZSIsImNyZWF0ZV92YXJpYW50IiwiY3JlYXRlX3ZlbmRvciIsInZpZXdfdmVuZG9yIiwidmlld191c2VycyIsIm1hcF91c2VyIiwiYXR0ZW5kYW5jZSIsImtpdHRpbmdfcmVmaWxsaW5nIiwiYXVkaXRfbWFjaGluZSIsInN0b2NraW5nIiwic3BhcmVfcGFydHMiLCJlX2RhYWxjaGluaSIsInNsb3RfdXRpbGl6YXRpb24iLCJoZWFsdGhfYWxlcnQiLCJ0cm91Ymxlc2hvb3RfZ3VpZGUiLCJyYWlzZV90aWNrZXQiLCJzZWxmX2Fzc2Vzc21lbnQiLCJyZWNjZSIsInZtX2luc3RhbGxhdGlvbiIsInZpZXdfdGFnIiwiYWN0aXZhdGVfdGFnIiwibWVhbHNfbWVudSIsInZtX3BhcmFtZXRlcnMiLCJzdXBwb3J0X25vdGlmaWNhdGlvbiIsInNsb3RfcmVwYWlyIiwicXVpY2tfdW5ibG9jayIsInVuYmxvY2tfYWxsX3Nsb3RzIiwic2xvdF9yZXBvcnQiLCJwYXJ0bmVyX3JlY2hhcmdlIiwib3JkZXJfYXBwcm92ZSIsImJ1bGtfcHVyY2hhc2UiLCJtb2JpbGl0eV9yZWZpbGwiLCJtYXBfYnBfdXNlciIsInZpZXdfZnJhbmNoaXNlZSIsImNyZWF0ZV9mcmFuY2hpc2VlIiwidmlld19iYW5rIiwiY3JlYXRlX2JhbmsiLCJ2aWV3X3BsYXRmb3JtX2NoYXJnZSIsIm1hcF9wbGF0Zm9ybV9jaGFyZ2UiLCJjcmVhdGVfcGxhdGZvcm1fY2hhcmdlIiwibW9iaWxpdHlfY2hlY2tpbiIsImNyZWF0ZV9jb3Vwb24iLCJ2aWV3X2NvdXBvbiIsImJ1eV9hdF92cCIsIm1hcF9tYWNoaW5lcyIsInZpZXdfYnBfdXNlciIsInZtX2NyZWF0ZSIsInZtX3VwZGF0ZSIsInZtX3ZpZXciLCJjb2hvcnRfY3JlYXRlIiwiY29ob3J0X3ZpZXciLCJjb2hvcnRfbWFwX3VzZXIiLCJjb2hvcnRfbWFwX21hY2hpbmUiLCJiYW5uZXJfY3JlYXRlIiwiYXBwcm92ZV9hdHRlbmRhbmNlIiwic2xvdF9vcGVyYXRpb24iLCJyZWZ1bmRfcmV2Il0sImlhdCI6MTY4MzE4MDQ5MywiZXhwIjoxNjgzMjY2ODkzfQ._c7482eYJB43fNpeGV-ig5kZ7V1oUSLhIjiMU_dV07DS8QoNIgRq6-1_22o7qqRo";
+        String url = "https://api-stage.daalchini.co.in/partner/api/v2/warehouse/1/invoice/814";
+        aTask.execute(url,"",token);
+    }
+
 //    private Bitmap LoadBitmap(View v, int width, int height){
 //        Bitmap bitmap = Bitmap.createBitmap(width,height,Bitmap.Config.ARGB_8888);
 //        Canvas canvas = new Canvas(bitmap);
@@ -200,7 +228,7 @@ public class InvoiceActivity extends AppCompatActivity {
 
 
 
-    private void createPDF() throws FileNotFoundException {
+    private void createPDF(DataInvoiceKit response) throws FileNotFoundException {
         pdfPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
         file = new File(pdfPath,"myPDF_PDF.pdf");
         OutputStream outputStream = new FileOutputStream(file);
@@ -209,13 +237,13 @@ public class InvoiceActivity extends AppCompatActivity {
         com.itextpdf.kernel.pdf.PdfDocument pdfDocument = new com.itextpdf.kernel.pdf.PdfDocument(writer);
         document = new  com.itextpdf.layout.Document(pdfDocument,PageSize.A4);
         uri = FileProvider.getUriForFile(Objects.requireNonNull(getApplicationContext()), BuildConfig.APPLICATION_ID + ".provider", file);
-        float columnWidthHeading[] = {820};
+        float[] columnWidthHeading = {820};
         Table table1 = new Table(columnWidthHeading);
         Table tableShippingAddress = new Table(columnWidthHeading);
         Table tableDeliveryAddress = new Table(columnWidthHeading);
-        table1.setMarginTop(40.0f);
         tableShippingAddress.setMarginTop(40.0f);
         tableDeliveryAddress.setMarginTop(40.0f);
+        tableDeliveryAddress.setMarginBottom(80.0f);
         addColumnHeaders(table1);
         addColumnHeadersDelivery(tableDeliveryAddress);
         addColumnHeadersShipping(tableShippingAddress);
@@ -235,14 +263,13 @@ public class InvoiceActivity extends AppCompatActivity {
         document.add(tableShippingAddress);
         document.add(tableDeliveryAddress);
 
-        float columnWidthHeading2[] = {100,300,100,100,100,120,100};
+        float[] columnWidthHeading2 = {100,300,100,100,100,120,100};
         Table table2 = new Table(columnWidthHeading2);
-        table2.setMarginTop(40.0f);
         addColumnHeaders2(table2);
 
-        for (int i=0 ; i<20 ; i++){
+        for (int i=0 ; i<response.getItemDetails().getItems().size() ; i++){
 
-            table2.addCell(new Cell().add(new Paragraph("1").setTextAlignment(TextAlignment.CENTER)).setBackgroundColor(ColorConstants.LIGHT_GRAY).setFontSize(10f));
+            table2.addCell(new Cell().add(new Paragraph(String.valueOf(++i)).setTextAlignment(TextAlignment.CENTER)).setBackgroundColor(ColorConstants.LIGHT_GRAY).setFontSize(10f));
             table2.addCell(new Cell().add(new Paragraph("Namkeen").setTextAlignment(TextAlignment.CENTER)).setBackgroundColor(ColorConstants.LIGHT_GRAY).setFontSize(10f));
             table2.addCell(new Cell().add(new Paragraph("2342354").setTextAlignment(TextAlignment.CENTER)).setBackgroundColor(ColorConstants.LIGHT_GRAY).setFontSize(10f));
             table2.addCell(new Cell().add(new Paragraph("2").setTextAlignment(TextAlignment.CENTER)).setBackgroundColor(ColorConstants.LIGHT_GRAY).setFontSize(10f));
@@ -260,8 +287,31 @@ public class InvoiceActivity extends AppCompatActivity {
         }
         document.add(table2);
 
+        float[] columnWithforTax = {205,205,205,205};
+        Table taxTable = new Table(columnWithforTax);
+
+        taxTable.setMarginTop(40.0f);
+        addColumnHeadersTax(taxTable);
+        for (int j = 0 ; j<response.getTaxDetails().getTaxes().size(); j++){
+            taxTable.addCell(new Cell().add(new Paragraph("1").setTextAlignment(TextAlignment.CENTER)).setFontSize(10f));
+            taxTable.addCell(new Cell().add(new Paragraph(String.valueOf(response.getTaxDetails().getTaxes().get(j).getIgstValue())).setTextAlignment(TextAlignment.CENTER)).setFontSize(10f));
+            taxTable.addCell(new Cell().add(new Paragraph(String.valueOf(response.getTaxDetails().getTaxes().get(j).getCgstValue())).setTextAlignment(TextAlignment.CENTER)).setFontSize(10f));
+            taxTable.addCell(new Cell().add(new Paragraph(String.valueOf(response.getTaxDetails().getTaxes().get(j).getSgstValue())).setTextAlignment(TextAlignment.CENTER)).setFontSize(10f));
+        }
+        document.add(taxTable);
+
         document.close();
         showdoc();
+    }
+
+    private void addColumnHeadersTax(Table taxTable) {
+        if (checkForHeaders){
+            taxTable.addCell(new Cell().add(new Paragraph("ID").setTextAlignment(TextAlignment.CENTER)));
+            taxTable.addCell(new Cell().add(new Paragraph("I GST").setTextAlignment(TextAlignment.CENTER)));
+            taxTable.addCell(new Cell().add(new Paragraph("Cg St").setTextAlignment(TextAlignment.CENTER)));
+            taxTable.addCell(new Cell().add(new Paragraph("Sg St").setTextAlignment(TextAlignment.CENTER)));
+            checkForHeaders = false;
+        }
     }
 
     private void addColumnHeadersDelivery(Table tableDeliveryAddress) {

@@ -11,4 +11,6 @@
     <color name="customBrown">#6B4C52</color>
     <color name="txtbrownColour">#59494C</color>
     <color name="lightBrown">#eadecd</color>
+    <color name="red">#EC3B2E</color>
+    <color name="yellow">#FFC107</color>
 </resources>

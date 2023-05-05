@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".InvoiceActivity"
+    android:orientation="vertical">
+
+<!--    <HorizontalScrollView-->
+<!--        android:id="@+id/hscrll1"-->
+<!--        android:layout_width="fill_parent"-->
+<!--        aTableLayoutndroid:layout_height="wrap_content" >-->
+
+<!--        <RelativeLayout-->
+<!--            android:id="@+id/RelativeLayout1"-->
+<!--            android:layout_width="fill_parent"-->
+<!--            android:layout_gravity="center"-->
+<!--            android:layout_height="fill_parent"-->
+<!--            android:orientation="vertical" >-->
+
+<!--            <TableLayout-->
+<!--                android:id="@+id/table_main"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_centerHorizontal="true" >-->
+<!--            </TableLayout>-->
+<!--        </RelativeLayout>-->
+<!--    </HorizontalScrollView>-->
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:id="@+id/layoutLinearView"
+            android:orientation="vertical">
+
+<!--            <com.google.android.material.card.MaterialCardView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                app:cardCornerRadius="@dimen/_5sdp"-->
+<!--                app:cardUseCompatPadding="true"-->
+<!--                android:layout_marginLeft="@dimen/_10sdp"-->
+<!--                android:layout_marginRight="@dimen/_10sdp"-->
+<!--                app:cardElevation="@dimen/_5sdp"-->
+<!--                android:elevation="@dimen/_5sdp">-->
+
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:layout_margin="@dimen/_10sdp"-->
+<!--                    android:orientation="vertical">-->
+
+<!--                    <TextView-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:textSize="@dimen/_8sdp"-->
+<!--                        android:text="Invoice No: DFB/MH/21-22/006"/>-->
+
+<!--                    <TextView-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:textSize="@dimen/_8sdp"-->
+<!--                        android:text="Date: 30-03-2022"/>-->
+
+<!--                    <TextView-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginTop="@dimen/_5sdp"-->
+<!--                        android:fontFamily="sans-serif-medium"-->
+<!--                        android:textStyle="bold"-->
+<!--                        android:text="Daalchini Foods &amp; Bevrages Pvt.Ltd"/>-->
+
+<!--                    <TextView-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:textSize="@dimen/_9sdp"-->
+<!--                        android:text="Plot no 505, Udyog Vihar, Phase-V,"/>-->
+
+<!--                    <TextView-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:textSize="@dimen/_9sdp"-->
+<!--                        android:text="Sector-19,Near Shankar Chowk,"/>-->
+
+<!--                    <TextView-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:textSize="@dimen/_9sdp"-->
+<!--                        android:text="Gurugram -122002"/>-->
+
+<!--                    <TextView-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginTop="@dimen/_5sdp"-->
+<!--                        android:textSize="@dimen/_9sdp"-->
+<!--                        android:text="GSTIN - 06AAGCD2969FIZQ"/>-->
+
+<!--                </LinearLayout>-->
+<!--            </com.google.android.material.card.MaterialCardView>-->
+
+<!--            <com.google.android.material.card.MaterialCardView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                app:cardCornerRadius="@dimen/_5sdp"-->
+<!--                android:layout_marginLeft="@dimen/_10sdp"-->
+<!--                android:layout_marginRight="@dimen/_10sdp"-->
+<!--                app:cardUseCompatPadding="true"-->
+<!--                app:cardElevation="@dimen/_5sdp"-->
+<!--                android:elevation="@dimen/_5sdp">-->
+
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:orientation="vertical">-->
+
+<!--                    <LinearLayout-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:padding="@dimen/_8sdp"-->
+<!--                        android:background="@color/customBrown"-->
+<!--                        android:orientation="horizontal">-->
+
+<!--                        <TextView-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:text="Shipping address"-->
+<!--                            android:textSize="@dimen/_12sdp"-->
+<!--                            android:textColor="@color/white"/>-->
+
+<!--                    </LinearLayout>-->
+
+<!--                    <LinearLayout-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="match_parent"-->
+<!--                        android:layout_margin="@dimen/_10sdp"-->
+<!--                        android:orientation="vertical">-->
+
+<!--                    <TextView-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginTop="@dimen/_5sdp"-->
+<!--                        android:fontFamily="sans-serif-medium"-->
+<!--                        android:textStyle="bold"-->
+<!--                        android:text="Daalchini Foods &amp; Bevrages Pvt.Ltd"/>-->
+
+<!--                    <TextView-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:textSize="@dimen/_9sdp"-->
+<!--                        android:text="Plot no 505, Udyog Vihar, Phase-V,"/>-->
+
+<!--                    <TextView-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:textSize="@dimen/_9sdp"-->
+<!--                        android:text="Sector-19,Near Shankar Chowk,"/>-->
+
+<!--                    <TextView-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:textSize="@dimen/_9sdp"-->
+<!--                        android:text="Gurugram -122002"/>-->
+
+<!--                    <TextView-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginTop="@dimen/_5sdp"-->
+<!--                        android:textSize="@dimen/_9sdp"-->
+<!--                        android:text="GSTIN - 06AAGCD2969FIZQ"/>-->
+<!--                    </LinearLayout>-->
+
+<!--                </LinearLayout>-->
+<!--            </com.google.android.material.card.MaterialCardView>-->
+
+<!--            <com.google.android.material.card.MaterialCardView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                app:cardCornerRadius="@dimen/_5sdp"-->
+<!--                android:layout_marginLeft="@dimen/_10sdp"-->
+<!--                android:layout_marginRight="@dimen/_10sdp"-->
+<!--                app:cardUseCompatPadding="true"-->
+<!--                app:cardElevation="@dimen/_5sdp"-->
+<!--                android:elevation="@dimen/_5sdp">-->
+
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:orientation="vertical">-->
+
+<!--                    <LinearLayout-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:padding="@dimen/_8sdp"-->
+<!--                        android:background="@color/customBrown"-->
+<!--                        android:orientation="horizontal">-->
+
+<!--                        <TextView-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:text="Delivery address"-->
+<!--                            android:textSize="@dimen/_12sdp"-->
+<!--                            android:textColor="@color/white"/>-->
+
+<!--                    </LinearLayout>-->
+
+<!--                    <LinearLayout-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="match_parent"-->
+<!--                        android:layout_margin="@dimen/_10sdp"-->
+<!--                        android:orientation="vertical">-->
+
+<!--                        <TextView-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginTop="@dimen/_5sdp"-->
+<!--                            android:fontFamily="sans-serif-medium"-->
+<!--                            android:textStyle="bold"-->
+<!--                            android:text="Daalchini Foods &amp; Bevrages Pvt.Ltd"/>-->
+
+<!--                        <TextView-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:textSize="@dimen/_9sdp"-->
+<!--                            android:text="Plot no 505, Udyog Vihar, Phase-V,"/>-->
+
+<!--                        <TextView-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:textSize="@dimen/_9sdp"-->
+<!--                            android:text="Sector-19,Near Shankar Chowk,"/>-->
+
+<!--                        <TextView-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:textSize="@dimen/_9sdp"-->
+<!--                            android:text="Gurugram -122002"/>-->
+
+<!--                        <TextView-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginTop="@dimen/_5sdp"-->
+<!--                            android:textSize="@dimen/_9sdp"-->
+<!--                            android:text="GSTIN - 06AAGCD2969FIZQ"/>-->
+<!--                    </LinearLayout>-->
+
+<!--                </LinearLayout>-->
+<!--            </com.google.android.material.card.MaterialCardView>-->
+
+<!--            <com.github.barteksc.pdfviewer.PDFView-->
+<!--                android:id="@+id/pdf_view"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:fitsSystemWindows="true"-->
+<!--                android:layout_height="@dimen/_300sdp"/>-->
+
+
+                    <com.github.barteksc.pdfviewer.PDFView
+                        android:id="@+id/pdf_view"
+                        android:layout_width="match_parent"
+                        android:fitsSystemWindows="true"
+                        android:layout_height="800dp"/>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnPrintPDF"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/green"
+            android:layout_marginLeft="@dimen/_30sdp"
+            android:layout_marginRight="@dimen/_30sdp"
+            app:cornerRadius="@dimen/_10sdp"
+            android:textColor="@color/white"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="@dimen/_7sdp"
+            android:text="Print"
+            android:textAllCaps="false">
+        </com.google.android.material.button.MaterialButton>
+</FrameLayout>

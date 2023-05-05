@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/_10sdp"
+    android:layout_margin="@dimen/_5sdp"
+    android:background="@color/black">
+
+    <TextView
+        android:id="@+id/txtKitStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Kit Prepared"
+        android:textColor="@color/white"/>
+
+    <TextView
+        android:id="@+id/txtMachineName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:text="Machine name"
+        android:textColor="@color/white"/>
+</LinearLayout>

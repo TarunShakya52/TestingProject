@@ -10,7 +10,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.demoapplication.IntentServiceResult
 import com.example.demoapplication.R
-import org.greenrobot.eventbus.EventBus
+//import org.greenrobot.eventbus.EventBus
 
 
 class AdapterOne(private var context: Context) : RecyclerView.Adapter<AdapterOne.ViewHolder>()  {
@@ -46,6 +46,6 @@ class AdapterOne(private var context: Context) : RecyclerView.Adapter<AdapterOne
     }
 
     fun handleIntent(quantity:String){
-        EventBus.getDefault().post(IntentServiceResult(quantity))
+//        EventBus.getDefault().post(IntentServiceResult(quantity))
     }
 }

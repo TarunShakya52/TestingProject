@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/titleTextView"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="S.No"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:layout_height="wrap_content"
+            android:background="@drawable/cell_border"
+            android:textSize="13sp"/>
+
+        <TextView
+            android:id="@+id/titleTextView1"
+            android:layout_width="0dp"
+            android:layout_weight="3"
+            android:text="Description of Goods"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:layout_height="wrap_content"
+            android:background="@drawable/cell_border"
+            android:textSize="13sp"/>
+
+        <TextView
+            android:id="@+id/titleTextView2"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="HSN"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:layout_height="wrap_content"
+            android:background="@drawable/cell_border"
+            android:textSize="13sp"/>
+
+        <TextView
+            android:id="@+id/titleTextView3"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="QTY"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:layout_height="wrap_content"
+            android:background="@drawable/cell_border"
+            android:textSize="13sp"/>
+
+        <TextView
+            android:id="@+id/titleTextView4"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="MRP"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:layout_height="wrap_content"
+            android:background="@drawable/cell_border"
+            android:textSize="13sp"/>
+
+        <TextView
+            android:id="@+id/titleTextView5"
+            android:layout_width="0dp"
+            android:layout_weight="1.5"
+            android:text="Unit Price"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:layout_height="wrap_content"
+            android:background="@drawable/cell_border"
+            android:textSize="13sp"/>
+
+        <TextView
+            android:id="@+id/titleTextView6"
+            android:layout_width="0dp"
+            android:layout_weight="1.2"
+            android:gravity="center"
+            android:text="GST"
+            android:textStyle="bold"
+            android:layout_height="wrap_content"
+            android:background="@drawable/cell_border"
+            android:textSize="13sp"/>
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/titleTextView7"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:background="@drawable/cell_border"
+            android:textSize="13sp"/>
+
+        <TextView
+            android:id="@+id/titleTextView8"
+            android:layout_width="0dp"
+            android:layout_weight="3"
+            android:text="Taxable Value"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:background="@drawable/cell_border"
+            android:textSize="13sp"/>
+
+        <TextView
+            android:id="@+id/titleTextView9"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="IGST"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:layout_height="wrap_content"
+            android:background="@drawable/cell_border"
+            android:textSize="13sp"/>
+
+        <TextView
+            android:id="@+id/titleTextView10"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="CGST"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:layout_height="wrap_content"
+            android:background="@drawable/cell_border"
+            android:textSize="13sp"/>
+
+        <TextView
+            android:id="@+id/titleTextView11"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="SGST"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:layout_height="wrap_content"
+            android:background="@drawable/cell_border"
+            android:textSize="13sp"/>
+
+        <TextView
+            android:id="@+id/titleTextView12"
+            android:layout_width="0dp"
+            android:layout_weight="1.5"
+            android:text="CESS"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:layout_height="wrap_content"
+            android:background="@drawable/cell_border"
+            android:textSize="13sp"/>
+
+        <TextView
+            android:id="@+id/titleTextView13"
+            android:layout_width="0dp"
+            android:layout_weight="1.2"
+            android:text="Amount"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:layout_height="wrap_content"
+            android:background="@drawable/cell_border"
+            android:textSize="13sp"/>
+
+    </LinearLayout>
+
+
+</LinearLayout>

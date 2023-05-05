@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AddSEZAddress">
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:id="@+id/sezAddress">
+
+  <com.google.android.material.textfield.TextInputLayout
+      android:id="@+id/dropDownMenu"
+      style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="32dp"
+      android:layout_marginEnd="32dp"
+      android:layout_marginTop="@dimen/_10sdp"
+      android:elevation="5dp"
+      android:hint="Select Warehouse"
+      app:boxStrokeColor="@color/customBrown"
+      app:hintTextColor="@color/customBrown"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent">
+
+    <AutoCompleteTextView
+        android:id="@+id/autoCompleteTextView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:inputType="none"
+        android:textColor="@color/customBrown" />
+  </com.google.android.material.textfield.TextInputLayout>
+
+  <TextView
+      android:id="@+id/textView4"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:fontFamily="sans-serif-medium"
+      android:text="Title"
+      android:layout_marginTop="@dimen/_10sdp"
+      android:textColor="@color/black"
+      android:textSize="@dimen/_11sdp"
+      app:layout_constraintStart_toStartOf="@+id/titleCardView"
+      app:layout_constraintTop_toBottomOf="@+id/dropDownMenu" />
+
+
+  <com.google.android.material.card.MaterialCardView
+      android:id="@+id/titleCardView"
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/_60sdp"
+      android:layout_marginStart="32dp"
+      android:layout_marginEnd="32dp"
+      app:cardElevation="@dimen/_5sdp"
+      app:cardUseCompatPadding="true"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/textView4">
+
+    <EditText
+        android:id="@+id/etTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:padding="@dimen/_10sdp"
+        android:textColor="@color/customBrown"
+        android:textCursorDrawable="@drawable/buttonborder"
+        android:textSize="@dimen/_10sdp">
+
+    </EditText>
+  </com.google.android.material.card.MaterialCardView>
+
+  <TextView
+      android:id="@+id/tvSezAddress"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/_10sdp"
+      android:fontFamily="sans-serif-medium"
+      android:text="Sez Address"
+      android:textColor="@color/black"
+      android:textSize="@dimen/_11sdp"
+      app:layout_constraintBottom_toTopOf="@+id/materialCardView"
+      app:layout_constraintStart_toStartOf="@+id/materialCardView"
+      app:layout_constraintTop_toBottomOf="@+id/titleCardView" />
+
+  <com.google.android.material.card.MaterialCardView
+      android:id="@+id/materialCardView"
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/_80sdp"
+      android:layout_marginStart="32dp"
+      android:layout_marginEnd="32dp"
+      android:layout_marginTop="@dimen/_15sdp"
+      app:cardElevation="@dimen/_5sdp"
+      app:cardUseCompatPadding="true"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/titleCardView"
+      app:layout_constraintVertical_bias="0.050000012"
+      tools:layout_editor_absoluteX="32dp">
+
+    <EditText
+        android:id="@+id/etSezAddress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:padding="@dimen/_10sdp"
+        android:textColor="@color/customBrown"
+        android:textCursorDrawable="@drawable/buttonborder"
+        android:textSize="@dimen/_10sdp">
+    </EditText>
+  </com.google.android.material.card.MaterialCardView>
+
+  <TextView
+      android:id="@+id/tvEnterGst"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:fontFamily="sans-serif-medium"
+      android:text="GST"
+      android:textColor="@color/black"
+      android:textSize="@dimen/_11sdp"
+      android:layout_marginTop="@dimen/_10sdp"
+      app:layout_constraintBottom_toTopOf="@+id/gstCardView"
+      app:layout_constraintStart_toStartOf="@+id/gstCardView"
+      app:layout_constraintTop_toBottomOf="@+id/materialCardView" />
+
+  <com.google.android.material.card.MaterialCardView
+      android:id="@+id/gstCardView"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      app:cardElevation="@dimen/_5sdp"
+      app:cardUseCompatPadding="true"
+      android:layout_marginStart="32dp"
+      android:layout_marginEnd="32dp"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/materialCardView"
+      app:layout_constraintVertical_bias="0.06999999"
+      tools:layout_editor_absoluteX="32dp">
+
+    <EditText
+        android:id="@+id/etGst"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:padding="@dimen/_10sdp"
+        android:textColor="@color/customBrown"
+        android:textCursorDrawable="@drawable/buttonborder"
+        android:textSize="@dimen/_10sdp">
+    </EditText>
+  </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:id="@+id/tvPlaceofSupply"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-medium"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:text="Place of Supply"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_11sdp"
+        app:layout_constraintStart_toStartOf="@+id/etPlaceofSupplt"
+        app:layout_constraintTop_toBottomOf="@+id/gstCardView" />
+
+  <com.google.android.material.card.MaterialCardView
+      android:id="@+id/etPlaceofSupplt"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      app:cardElevation="@dimen/_5sdp"
+      app:cardUseCompatPadding="true"
+      android:layout_marginStart="32dp"
+      android:layout_marginEnd="32dp"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/gstCardView"
+      app:layout_constraintVertical_bias="0.100000024"
+      tools:layout_editor_absoluteX="32dp">
+
+    <EditText
+        android:id="@+id/etPlaceofSupply"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:padding="@dimen/_10sdp"
+        android:textColor="@color/customBrown"
+        android:textCursorDrawable="@drawable/buttonborder"
+        android:textSize="@dimen/_10sdp">
+    </EditText>
+  </com.google.android.material.card.MaterialCardView>
+
+  <TextView
+      android:id="@+id/tvStateCode"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:fontFamily="sans-serif-medium"
+      android:text="State Code"
+      android:layout_marginTop="@dimen/_10sdp"
+      android:textColor="@color/black"
+      android:textSize="@dimen/_11sdp"
+      app:layout_constraintStart_toStartOf="@+id/materialCardView5"
+      app:layout_constraintTop_toBottomOf="@+id/etPlaceofSupplt" />
+
+  <com.google.android.material.card.MaterialCardView
+      android:id="@+id/materialCardView5"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      app:cardElevation="@dimen/_5sdp"
+      android:layout_marginStart="32dp"
+      android:layout_marginEnd="32dp"
+      android:layout_marginTop="@dimen/_10sdp"
+      app:cardUseCompatPadding="true"
+      app:layout_constraintTop_toBottomOf="@+id/tvStateCode"
+      tools:layout_editor_absoluteX="32dp">
+
+    <EditText
+        android:id="@+id/etStateCode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:padding="@dimen/_10sdp"
+        android:textColor="@color/customBrown"
+        android:textCursorDrawable="@drawable/buttonborder"
+        android:textSize="@dimen/_10sdp">
+    </EditText>
+  </com.google.android.material.card.MaterialCardView>
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnAddAdressActive"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/green"
+        android:text="Save Address"
+        app:elevation="5dp"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        app:cornerRadius="@dimen/_5sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/materialCardView5"
+        app:layout_constraintVertical_bias="0.19999999"
+        tools:layout_editor_absoluteX="32dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnAddAdressInactive"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/white"
+        android:text="Save Address"
+        app:elevation="5dp"
+        android:textAllCaps="false"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:textColor="@color/black"
+        app:cornerRadius="@dimen/_5sdp"
+        app:strokeColor="@color/black"
+        app:strokeWidth="@dimen/_1sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/materialCardView5"
+        app:layout_constraintVertical_bias="0.19999999"
+        tools:layout_editor_absoluteX="32dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/materialButton2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:text="View Other Address"
+        android:textAllCaps="false"
+        android:textColor="@color/green"
+        app:backgroundTint="@color/white"
+        app:elevation="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/btnAddAdressActive"
+        app:layout_constraintStart_toStartOf="@+id/btnAddAdressActive"
+        app:layout_constraintTop_toBottomOf="@+id/btnAddAdressActive"
+        app:layout_constraintVertical_bias="0.37"
+        app:strokeColor="@color/green"
+        app:strokeWidth="@dimen/_1sdp" />
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>
