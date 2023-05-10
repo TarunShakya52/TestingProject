@@ -14,17 +14,31 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.demoapplication.R;
 import com.example.demoapplication.response.SezAddressGetResponse;
 import com.example.demoapplication.response.SezLocation;
+import com.google.android.material.card.MaterialCardView;
 
 public class SEZddressAdapter extends RecyclerView.Adapter<SEZddressAdapter.ViewHolder> {
 
     private Context context;
     private SezAddressGetResponse response;
     private sezDetails listner;
+    private Boolean edit;
+    private Boolean shipping;
+    private Boolean billing;
 
-    public SEZddressAdapter(Context context, SezAddressGetResponse response,sezDetails listner){
+    public SEZddressAdapter(Context context, SezAddressGetResponse response,sezDetails listner,Boolean edit){
         this.context = context;
         this.response = response;
         this.listner = listner;
+        this.edit = edit;
+    }
+
+    public SEZddressAdapter(Context context,SezAddressGetResponse response,sezDetails listner,Boolean shipping,Boolean billing,Boolean edit){
+        this.context = context;
+        this.response = response;
+        this.shipping = shipping;
+        this.listner = listner;
+        this.billing = billing;
+        this.edit = edit;
     }
 
     @NonNull
@@ -40,6 +54,29 @@ public class SEZddressAdapter extends RecyclerView.Adapter<SEZddressAdapter.View
     public void onBindViewHolder(@NonNull SEZddressAdapter.ViewHolder holder, int position) {
 
         SezLocation data = response.getData().getSezLocations().get(position);
+
+
+        if (edit){
+            holder.edit.setVisibility(View.VISIBLE);
+        }else {
+            holder.edit.setVisibility(View.GONE);
+            if (shipping && !billing){
+            holder.layout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listner.getShippingDetails(data.getTitle(),data.getGstin(),data.getSupplyPlace(),data.getStateCode(),data.getAddress(),data.getId());
+                }
+            });
+            }else {
+                holder.layout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        listner.getBillingDetails(data.getTitle(),data.getGstin(),data.getSupplyPlace(),data.getStateCode(),data.getAddress(),data.getId());
+                    }
+                });
+            }
+        }
+
         holder.tvcompanyName.setText(data.getTitle());
         holder.tvGstIn.setText("GSTIN - "+data.getGstin());
         holder.tvAddressLine3.setText(data.getSupplyPlace() +" - "+data.getStateCode());
@@ -51,6 +88,7 @@ public class SEZddressAdapter extends RecyclerView.Adapter<SEZddressAdapter.View
                 listner.getDetails(data.getTitle(),data.getGstin(),data.getSupplyPlace(),data.getStateCode(),data.getAddress(),data.getId());
             }
         });
+
     }
 
     @Override
@@ -62,6 +100,7 @@ public class SEZddressAdapter extends RecyclerView.Adapter<SEZddressAdapter.View
 
         private TextView tvcompanyName,tvAddressLine1,tvAddressLine2,tvAddressLine3,tvGstIn;
         private CardView edit;
+        private MaterialCardView layout;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -71,10 +110,13 @@ public class SEZddressAdapter extends RecyclerView.Adapter<SEZddressAdapter.View
             tvAddressLine3 = itemView.findViewById(R.id.tvAdressLine3);
             tvGstIn = itemView.findViewById(R.id.tvGstIn);
             edit = itemView.findViewById(R.id.imgEdit);
+            layout = itemView.findViewById(R.id.materialCardView2);
         }
     }
 
     public interface sezDetails{
         public void getDetails(String title, String gstin, String supplyPlace, String stateCode, String address,int id);
+        public void getShippingDetails(String title, String gstin, String supplyPlace, String stateCode, String address,int id);
+        public void getBillingDetails(String title, String gstin, String supplyPlace, String stateCode, String address,int id);
     }
 }

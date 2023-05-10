@@ -13,6 +13,9 @@ public class AddSEZAdress_Request {
     @SerializedName("address")
     private String address;
 
+    @SerializedName("state_code")
+    private String state_code;
+
     public String getTitle() {
         return title;
     }
@@ -56,6 +59,25 @@ public class AddSEZAdress_Request {
     @SerializedName("supply_place")
     private String supply_place;
 
-    @SerializedName("state_code")
-    private String state_code;
+    public Boolean getShipping() {
+        return shipping;
+    }
+
+    public void setShipping(Boolean shipping) {
+        this.shipping = shipping;
+    }
+
+    public Boolean getBilling() {
+        return billing;
+    }
+
+    public void setBilling(Boolean billing) {
+        this.billing = billing;
+    }
+
+    @SerializedName("shipping")
+    private Boolean shipping;
+
+    @SerializedName("billing")
+    private Boolean billing;
 }
