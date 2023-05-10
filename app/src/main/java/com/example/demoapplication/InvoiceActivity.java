@@ -98,7 +98,7 @@ public class InvoiceActivity extends AppCompatActivity {
     String jsonStringShipping,jsonStringBilling;
     private SezAddressGetResponse sezAddressGetResponse;
     Gson gson = new Gson();
-    int table2Count,taxTableCount = 0;
+    int table2Count,taxTableCount;
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,38 +165,41 @@ public class InvoiceActivity extends AppCompatActivity {
         btnPrintPDF.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (jsonStringBilling != null && jsonStringShipping != null)
+                {
+                    if (device != null) {
+                        if (mUsbManager.hasPermission(device)) {
+                            tscusbActivity.openport(mUsbManager, device);
 
-                if (device != null){
-                    if (mUsbManager.hasPermission(device))
-                    {
-                        tscusbActivity.openport(mUsbManager, device);
+                            tscusbActivity.setup(70, 50, 4, 4, 0, 0, 0);
 
-                        tscusbActivity.setup(70, 50, 4, 4, 0, 0,0);
-
-                        tscusbActivity.sendcommand("PDF-IMAGE\n");
+                            tscusbActivity.sendcommand("PDF-IMAGE\n");
 
 //                    tscusbActivity.sendcommand("CLS\r\n");
 //                    tscusbActivity.sendcommand("PRINT " + "number" + "\r\n");
 
-                        pdfPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
-                        file = new File(pdfPath,"myPDF_PDF.pdf");
-                        Log.e("filePath",file.getPath());
+                            pdfPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
+                            file = new File(pdfPath, "myPDF_PDF.pdf");
+                            Log.e("filePath", file.getPath());
 
 //                    tscusbActivity.printPDFbyFile(file,30,20,90);
 
-                        try (InputStream is = new FileInputStream(file)) {
-                            tscusbActivity.printPDFbyFile(file,0,0,70);
-                            tscusbActivity.sendcommand("PRINT\n");
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                            try (InputStream is = new FileInputStream(file)) {
+                                tscusbActivity.printPDFbyFile(file, 0, 0, 70);
+                                tscusbActivity.sendcommand("PRINT\n");
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
 
-                        tscusbActivity.closeport();
-                    }else {
-                        Toast.makeText(InvoiceActivity.this, "Permission not given", Toast.LENGTH_SHORT).show();
+                            tscusbActivity.closeport();
+                        } else {
+                            Toast.makeText(InvoiceActivity.this, "Permission not given", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(InvoiceActivity.this, "Device not connected", Toast.LENGTH_SHORT).show();
                     }
                 }else {
-                    Toast.makeText(InvoiceActivity.this,"Device not connected",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(InvoiceActivity.this,"Shipping or Billing Details are missing",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -236,9 +239,11 @@ public class InvoiceActivity extends AppCompatActivity {
 
             }
         });
-        String token = "eyJhbGciOiJIUzM4NCIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJiNTA4OWExMi1mYjFhLTQzYWItODljNS0xZGRhOTlmMjU4NDciLCJpZCI6MjExLCJtb2JpbGUiOiI4MDg4NDAzNDMyIiwicm9sZSI6IkFETUlOIiwicGVybWlzc2lvbnMiOlsidm1fYWxsb3dlZCIsInByb2R1Y3RfYWxsb3dlZCIsIm9yZGVyc19hbGxvd2VkIiwidXNlcl9hbGxvd2VkIiwidm1fc2V0dGluZ3MiLCJ2bV9zYWxlcyIsIm5vdGlmaWNhdGlvbl9lbmFibGVkIiwiYWJzb2x1dGVfc2FsZXMiLCJ2ZW5kb3JfYWxsb3dlZCIsIndhbGxldF9oaXN0b3J5Iiwidmlld19icmFuZHMiLCJjcmVhdGVfYnJhbmQiLCJ2aWV3X2Jhc2UiLCJ2aWV3X3ZhcmlhbnRzIiwibWFwX3ZlbmRvciIsInZpZXdfcHJvZHVjdHMiLCJjcmVhdGVfcHJvZHVjdHMiLCJjcmVhdGVfYmFzZSIsImNyZWF0ZV92YXJpYW50IiwiY3JlYXRlX3ZlbmRvciIsInZpZXdfdmVuZG9yIiwidmlld191c2VycyIsIm1hcF91c2VyIiwiYXR0ZW5kYW5jZSIsImtpdHRpbmdfcmVmaWxsaW5nIiwiYXVkaXRfbWFjaGluZSIsInN0b2NraW5nIiwic3BhcmVfcGFydHMiLCJlX2RhYWxjaGluaSIsInNsb3RfdXRpbGl6YXRpb24iLCJoZWFsdGhfYWxlcnQiLCJ0cm91Ymxlc2hvb3RfZ3VpZGUiLCJyYWlzZV90aWNrZXQiLCJzZWxmX2Fzc2Vzc21lbnQiLCJyZWNjZSIsInZtX2luc3RhbGxhdGlvbiIsInZpZXdfdGFnIiwiYWN0aXZhdGVfdGFnIiwibWVhbHNfbWVudSIsInZtX3BhcmFtZXRlcnMiLCJzdXBwb3J0X25vdGlmaWNhdGlvbiIsInNsb3RfcmVwYWlyIiwicXVpY2tfdW5ibG9jayIsInVuYmxvY2tfYWxsX3Nsb3RzIiwic2xvdF9yZXBvcnQiLCJwYXJ0bmVyX3JlY2hhcmdlIiwib3JkZXJfYXBwcm92ZSIsImJ1bGtfcHVyY2hhc2UiLCJtb2JpbGl0eV9yZWZpbGwiLCJtYXBfYnBfdXNlciIsInZpZXdfZnJhbmNoaXNlZSIsImNyZWF0ZV9mcmFuY2hpc2VlIiwidmlld19iYW5rIiwiY3JlYXRlX2JhbmsiLCJ2aWV3X3BsYXRmb3JtX2NoYXJnZSIsIm1hcF9wbGF0Zm9ybV9jaGFyZ2UiLCJjcmVhdGVfcGxhdGZvcm1fY2hhcmdlIiwibW9iaWxpdHlfY2hlY2tpbiIsImNyZWF0ZV9jb3Vwb24iLCJ2aWV3X2NvdXBvbiIsImJ1eV9hdF92cCIsIm1hcF9tYWNoaW5lcyIsInZpZXdfYnBfdXNlciIsInZtX2NyZWF0ZSIsInZtX3VwZGF0ZSIsInZtX3ZpZXciLCJjb2hvcnRfY3JlYXRlIiwiY29ob3J0X3ZpZXciLCJjb2hvcnRfbWFwX3VzZXIiLCJjb2hvcnRfbWFwX21hY2hpbmUiLCJiYW5uZXJfY3JlYXRlIiwiYXBwcm92ZV9hdHRlbmRhbmNlIiwic2xvdF9vcGVyYXRpb24iLCJyZWZ1bmRfcmV2Il0sImlhdCI6MTY4MzYzMzIxMywiZXhwIjoxNjgzNzE5NjEzfQ.T99JHUBtENBuDLFMlu7wqJHy1vzm_aT6d11Z3K6FwTRYntnAJrMipuTyb7ra7nQD";
+
+        String token = "eyJhbGciOiJIUzM4NCIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI1OGNkYjk4MC0yNzU4LTQxOGEtODY4MC1jZmU1MTAzMGU1ZDIiLCJpZCI6MjExLCJtb2JpbGUiOiI4MDg4NDAzNDMyIiwicm9sZSI6IkFETUlOIiwicGVybWlzc2lvbnMiOlsidm1fYWxsb3dlZCIsInByb2R1Y3RfYWxsb3dlZCIsIm9yZGVyc19hbGxvd2VkIiwidXNlcl9hbGxvd2VkIiwidm1fc2V0dGluZ3MiLCJ2bV9zYWxlcyIsIm5vdGlmaWNhdGlvbl9lbmFibGVkIiwiYWJzb2x1dGVfc2FsZXMiLCJ2ZW5kb3JfYWxsb3dlZCIsIndhbGxldF9oaXN0b3J5Iiwidmlld19icmFuZHMiLCJjcmVhdGVfYnJhbmQiLCJ2aWV3X2Jhc2UiLCJ2aWV3X3ZhcmlhbnRzIiwibWFwX3ZlbmRvciIsInZpZXdfcHJvZHVjdHMiLCJjcmVhdGVfcHJvZHVjdHMiLCJjcmVhdGVfYmFzZSIsImNyZWF0ZV92YXJpYW50IiwiY3JlYXRlX3ZlbmRvciIsInZpZXdfdmVuZG9yIiwidmlld191c2VycyIsIm1hcF91c2VyIiwiYXR0ZW5kYW5jZSIsImtpdHRpbmdfcmVmaWxsaW5nIiwiYXVkaXRfbWFjaGluZSIsInN0b2NraW5nIiwic3BhcmVfcGFydHMiLCJlX2RhYWxjaGluaSIsInNsb3RfdXRpbGl6YXRpb24iLCJoZWFsdGhfYWxlcnQiLCJ0cm91Ymxlc2hvb3RfZ3VpZGUiLCJyYWlzZV90aWNrZXQiLCJzZWxmX2Fzc2Vzc21lbnQiLCJyZWNjZSIsInZtX2luc3RhbGxhdGlvbiIsInZpZXdfdGFnIiwiYWN0aXZhdGVfdGFnIiwibWVhbHNfbWVudSIsInZtX3BhcmFtZXRlcnMiLCJzdXBwb3J0X25vdGlmaWNhdGlvbiIsInNsb3RfcmVwYWlyIiwicXVpY2tfdW5ibG9jayIsInVuYmxvY2tfYWxsX3Nsb3RzIiwic2xvdF9yZXBvcnQiLCJwYXJ0bmVyX3JlY2hhcmdlIiwib3JkZXJfYXBwcm92ZSIsImJ1bGtfcHVyY2hhc2UiLCJtb2JpbGl0eV9yZWZpbGwiLCJtYXBfYnBfdXNlciIsInZpZXdfZnJhbmNoaXNlZSIsImNyZWF0ZV9mcmFuY2hpc2VlIiwidmlld19iYW5rIiwiY3JlYXRlX2JhbmsiLCJ2aWV3X3BsYXRmb3JtX2NoYXJnZSIsIm1hcF9wbGF0Zm9ybV9jaGFyZ2UiLCJjcmVhdGVfcGxhdGZvcm1fY2hhcmdlIiwibW9iaWxpdHlfY2hlY2tpbiIsImNyZWF0ZV9jb3Vwb24iLCJ2aWV3X2NvdXBvbiIsImJ1eV9hdF92cCIsIm1hcF9tYWNoaW5lcyIsInZpZXdfYnBfdXNlciIsInZtX2NyZWF0ZSIsInZtX3VwZGF0ZSIsInZtX3ZpZXciLCJjb2hvcnRfY3JlYXRlIiwiY29ob3J0X3ZpZXciLCJjb2hvcnRfbWFwX3VzZXIiLCJjb2hvcnRfbWFwX21hY2hpbmUiLCJiYW5uZXJfY3JlYXRlIiwiYXBwcm92ZV9hdHRlbmRhbmNlIiwic2xvdF9vcGVyYXRpb24iLCJyZWZ1bmRfcmV2Il0sImlhdCI6MTY4MzcxMjE3NiwiZXhwIjoxNjgzNzk4NTc2fQ.tOFPJTfLI8BhpZirc_Na3PDrFBvu37D_ggiFepmfY4MVYyCklOweik9b4X8rYXV6";
         String url = "https://api-stage.daalchini.co.in/partner/api/v2/warehouse/1/invoice/814";
         aTask.execute(url,"",token);
+
     }
 
 //    private Bitmap LoadBitmap(View v, int width, int height){
@@ -266,6 +271,8 @@ public class InvoiceActivity extends AppCompatActivity {
 
 
     private void createPDF(DataInvoiceKit response, AddSEZAdress_Request shippingDetails, AddSEZAdress_Request billingDetails) throws FileNotFoundException {
+        table2Count = 0;
+        taxTableCount = 0;
         pdfPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
         file = new File(pdfPath,"myPDF_PDF.pdf");
         OutputStream outputStream = new FileOutputStream(file);
@@ -282,7 +289,7 @@ public class InvoiceActivity extends AppCompatActivity {
 
         tableShippingAddress.setMarginTop(40.0f);
         tableDeliveryAddress.setMarginTop(40.0f);
-        tableDeliveryAddress.setMarginBottom(140.0f);
+        tableDeliveryAddress.setMarginBottom(160.0f);
         addColumnHeaders(table1);
 
 //        jsonStringShipping = prefs.getString("gsonShippingAddress", null);
@@ -340,7 +347,7 @@ public class InvoiceActivity extends AppCompatActivity {
                 count++;
             }
 
-            table2.addCell(new Cell().add(new Paragraph(String.valueOf(table2Count++)).setTextAlignment(TextAlignment.CENTER)).setBackgroundColor(ColorConstants.LIGHT_GRAY).setFontSize(10f));
+            table2.addCell(new Cell().add(new Paragraph(String.valueOf(++table2Count)).setTextAlignment(TextAlignment.CENTER)).setBackgroundColor(ColorConstants.LIGHT_GRAY).setFontSize(10f));
             table2.addCell(new Cell().add(new Paragraph(response.getItemDetails().getItems().get(i).getDescription()).setTextAlignment(TextAlignment.CENTER)).setBackgroundColor(ColorConstants.LIGHT_GRAY).setFontSize(10f));
             table2.addCell(new Cell().add(new Paragraph(response.getItemDetails().getItems().get(i).getHsnCode()).setTextAlignment(TextAlignment.CENTER)).setBackgroundColor(ColorConstants.LIGHT_GRAY).setFontSize(10f));
             table2.addCell(new Cell().add(new Paragraph(String.valueOf(response.getItemDetails().getItems().get(i).getQuantity())).setTextAlignment(TextAlignment.CENTER)).setBackgroundColor(ColorConstants.LIGHT_GRAY).setFontSize(10f));
@@ -394,7 +401,7 @@ public class InvoiceActivity extends AppCompatActivity {
             }
 //                checkForHeaders = false;
 //            }
-            taxTable.addCell(new Cell().add(new Paragraph(String.valueOf(taxTableCount++)).setTextAlignment(TextAlignment.CENTER)).setFontSize(10f));
+            taxTable.addCell(new Cell().add(new Paragraph(String.valueOf(++taxTableCount)).setTextAlignment(TextAlignment.CENTER)).setFontSize(10f));
             taxTable.addCell(new Cell().add(new Paragraph(String.valueOf(response.getTaxDetails().getTaxes().get(j).getIgstValue())).setTextAlignment(TextAlignment.CENTER)).setFontSize(10f));
             taxTable.addCell(new Cell().add(new Paragraph(String.valueOf(response.getTaxDetails().getTaxes().get(j).getCgstValue())).setTextAlignment(TextAlignment.CENTER)).setFontSize(10f));
             taxTable.addCell(new Cell().add(new Paragraph(String.valueOf(response.getTaxDetails().getTaxes().get(j).getSgstValue())).setTextAlignment(TextAlignment.CENTER)).setFontSize(10f));
@@ -429,7 +436,15 @@ public class InvoiceActivity extends AppCompatActivity {
         Paragraph p5 = new Paragraph(billingDetails.getSupply_place()+" - "+billingDetails.getState_code());
         Paragraph p6 = new Paragraph("GSTIN - "+billingDetails.getGstin());
 
-        shippingCell.add(new Paragraph("Delivery Address").setBold().setFontSize(17).setPadding(5f).setFontColor(new DeviceRgb(255,255,255)));
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.bills);
+
+        byte[] imageData = getBytesFromBitmap(bitmap);
+
+        Image image = new Image(ImageDataFactory.create(imageData));
+        image.setWidth(20);
+        image.setHeight(15);
+
+        shippingCell.add(new Paragraph("Delivery Address").setMarginLeft(20.0f).setBold().setFontSize(17).setPadding(5f).setFontColor(new DeviceRgb(255,255,255)));
         cell.add(p1);
         cell.add(p2);
         cell.add(p3);
@@ -563,6 +578,8 @@ public class InvoiceActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+
+
         jsonStringShipping = prefs.getString("gsonShippingAddress", null);
         jsonStringBilling =  prefs.getString("gsonBillingAddress", null);
         if (jsonStringShipping != null) {
@@ -675,7 +692,7 @@ public class InvoiceActivity extends AppCompatActivity {
             }
         });
 
-        String token = "eyJhbGciOiJIUzM4NCIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJiNTA4OWExMi1mYjFhLTQzYWItODljNS0xZGRhOTlmMjU4NDciLCJpZCI6MjExLCJtb2JpbGUiOiI4MDg4NDAzNDMyIiwicm9sZSI6IkFETUlOIiwicGVybWlzc2lvbnMiOlsidm1fYWxsb3dlZCIsInByb2R1Y3RfYWxsb3dlZCIsIm9yZGVyc19hbGxvd2VkIiwidXNlcl9hbGxvd2VkIiwidm1fc2V0dGluZ3MiLCJ2bV9zYWxlcyIsIm5vdGlmaWNhdGlvbl9lbmFibGVkIiwiYWJzb2x1dGVfc2FsZXMiLCJ2ZW5kb3JfYWxsb3dlZCIsIndhbGxldF9oaXN0b3J5Iiwidmlld19icmFuZHMiLCJjcmVhdGVfYnJhbmQiLCJ2aWV3X2Jhc2UiLCJ2aWV3X3ZhcmlhbnRzIiwibWFwX3ZlbmRvciIsInZpZXdfcHJvZHVjdHMiLCJjcmVhdGVfcHJvZHVjdHMiLCJjcmVhdGVfYmFzZSIsImNyZWF0ZV92YXJpYW50IiwiY3JlYXRlX3ZlbmRvciIsInZpZXdfdmVuZG9yIiwidmlld191c2VycyIsIm1hcF91c2VyIiwiYXR0ZW5kYW5jZSIsImtpdHRpbmdfcmVmaWxsaW5nIiwiYXVkaXRfbWFjaGluZSIsInN0b2NraW5nIiwic3BhcmVfcGFydHMiLCJlX2RhYWxjaGluaSIsInNsb3RfdXRpbGl6YXRpb24iLCJoZWFsdGhfYWxlcnQiLCJ0cm91Ymxlc2hvb3RfZ3VpZGUiLCJyYWlzZV90aWNrZXQiLCJzZWxmX2Fzc2Vzc21lbnQiLCJyZWNjZSIsInZtX2luc3RhbGxhdGlvbiIsInZpZXdfdGFnIiwiYWN0aXZhdGVfdGFnIiwibWVhbHNfbWVudSIsInZtX3BhcmFtZXRlcnMiLCJzdXBwb3J0X25vdGlmaWNhdGlvbiIsInNsb3RfcmVwYWlyIiwicXVpY2tfdW5ibG9jayIsInVuYmxvY2tfYWxsX3Nsb3RzIiwic2xvdF9yZXBvcnQiLCJwYXJ0bmVyX3JlY2hhcmdlIiwib3JkZXJfYXBwcm92ZSIsImJ1bGtfcHVyY2hhc2UiLCJtb2JpbGl0eV9yZWZpbGwiLCJtYXBfYnBfdXNlciIsInZpZXdfZnJhbmNoaXNlZSIsImNyZWF0ZV9mcmFuY2hpc2VlIiwidmlld19iYW5rIiwiY3JlYXRlX2JhbmsiLCJ2aWV3X3BsYXRmb3JtX2NoYXJnZSIsIm1hcF9wbGF0Zm9ybV9jaGFyZ2UiLCJjcmVhdGVfcGxhdGZvcm1fY2hhcmdlIiwibW9iaWxpdHlfY2hlY2tpbiIsImNyZWF0ZV9jb3Vwb24iLCJ2aWV3X2NvdXBvbiIsImJ1eV9hdF92cCIsIm1hcF9tYWNoaW5lcyIsInZpZXdfYnBfdXNlciIsInZtX2NyZWF0ZSIsInZtX3VwZGF0ZSIsInZtX3ZpZXciLCJjb2hvcnRfY3JlYXRlIiwiY29ob3J0X3ZpZXciLCJjb2hvcnRfbWFwX3VzZXIiLCJjb2hvcnRfbWFwX21hY2hpbmUiLCJiYW5uZXJfY3JlYXRlIiwiYXBwcm92ZV9hdHRlbmRhbmNlIiwic2xvdF9vcGVyYXRpb24iLCJyZWZ1bmRfcmV2Il0sImlhdCI6MTY4MzYzMzIxMywiZXhwIjoxNjgzNzE5NjEzfQ.T99JHUBtENBuDLFMlu7wqJHy1vzm_aT6d11Z3K6FwTRYntnAJrMipuTyb7ra7nQD";
+        String token = "eyJhbGciOiJIUzM4NCIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI1OGNkYjk4MC0yNzU4LTQxOGEtODY4MC1jZmU1MTAzMGU1ZDIiLCJpZCI6MjExLCJtb2JpbGUiOiI4MDg4NDAzNDMyIiwicm9sZSI6IkFETUlOIiwicGVybWlzc2lvbnMiOlsidm1fYWxsb3dlZCIsInByb2R1Y3RfYWxsb3dlZCIsIm9yZGVyc19hbGxvd2VkIiwidXNlcl9hbGxvd2VkIiwidm1fc2V0dGluZ3MiLCJ2bV9zYWxlcyIsIm5vdGlmaWNhdGlvbl9lbmFibGVkIiwiYWJzb2x1dGVfc2FsZXMiLCJ2ZW5kb3JfYWxsb3dlZCIsIndhbGxldF9oaXN0b3J5Iiwidmlld19icmFuZHMiLCJjcmVhdGVfYnJhbmQiLCJ2aWV3X2Jhc2UiLCJ2aWV3X3ZhcmlhbnRzIiwibWFwX3ZlbmRvciIsInZpZXdfcHJvZHVjdHMiLCJjcmVhdGVfcHJvZHVjdHMiLCJjcmVhdGVfYmFzZSIsImNyZWF0ZV92YXJpYW50IiwiY3JlYXRlX3ZlbmRvciIsInZpZXdfdmVuZG9yIiwidmlld191c2VycyIsIm1hcF91c2VyIiwiYXR0ZW5kYW5jZSIsImtpdHRpbmdfcmVmaWxsaW5nIiwiYXVkaXRfbWFjaGluZSIsInN0b2NraW5nIiwic3BhcmVfcGFydHMiLCJlX2RhYWxjaGluaSIsInNsb3RfdXRpbGl6YXRpb24iLCJoZWFsdGhfYWxlcnQiLCJ0cm91Ymxlc2hvb3RfZ3VpZGUiLCJyYWlzZV90aWNrZXQiLCJzZWxmX2Fzc2Vzc21lbnQiLCJyZWNjZSIsInZtX2luc3RhbGxhdGlvbiIsInZpZXdfdGFnIiwiYWN0aXZhdGVfdGFnIiwibWVhbHNfbWVudSIsInZtX3BhcmFtZXRlcnMiLCJzdXBwb3J0X25vdGlmaWNhdGlvbiIsInNsb3RfcmVwYWlyIiwicXVpY2tfdW5ibG9jayIsInVuYmxvY2tfYWxsX3Nsb3RzIiwic2xvdF9yZXBvcnQiLCJwYXJ0bmVyX3JlY2hhcmdlIiwib3JkZXJfYXBwcm92ZSIsImJ1bGtfcHVyY2hhc2UiLCJtb2JpbGl0eV9yZWZpbGwiLCJtYXBfYnBfdXNlciIsInZpZXdfZnJhbmNoaXNlZSIsImNyZWF0ZV9mcmFuY2hpc2VlIiwidmlld19iYW5rIiwiY3JlYXRlX2JhbmsiLCJ2aWV3X3BsYXRmb3JtX2NoYXJnZSIsIm1hcF9wbGF0Zm9ybV9jaGFyZ2UiLCJjcmVhdGVfcGxhdGZvcm1fY2hhcmdlIiwibW9iaWxpdHlfY2hlY2tpbiIsImNyZWF0ZV9jb3Vwb24iLCJ2aWV3X2NvdXBvbiIsImJ1eV9hdF92cCIsIm1hcF9tYWNoaW5lcyIsInZpZXdfYnBfdXNlciIsInZtX2NyZWF0ZSIsInZtX3VwZGF0ZSIsInZtX3ZpZXciLCJjb2hvcnRfY3JlYXRlIiwiY29ob3J0X3ZpZXciLCJjb2hvcnRfbWFwX3VzZXIiLCJjb2hvcnRfbWFwX21hY2hpbmUiLCJiYW5uZXJfY3JlYXRlIiwiYXBwcm92ZV9hdHRlbmRhbmNlIiwic2xvdF9vcGVyYXRpb24iLCJyZWZ1bmRfcmV2Il0sImlhdCI6MTY4MzcxMjE3NiwiZXhwIjoxNjgzNzk4NTc2fQ.tOFPJTfLI8BhpZirc_Na3PDrFBvu37D_ggiFepmfY4MVYyCklOweik9b4X8rYXV6";
         String url = "https://api-stage.daalchini.co.in/partner/api/v2/warehouse/1/sez-location";
         aTask.execute(url,"","",token);
     }

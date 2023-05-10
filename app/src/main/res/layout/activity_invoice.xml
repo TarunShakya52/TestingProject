@@ -28,10 +28,7 @@
 <!--        </RelativeLayout>-->
 <!--    </HorizontalScrollView>-->
 
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/white">
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -45,7 +42,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="0.5"
-                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_5sdp"
                 android:orientation="horizontal">
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cv_shipping"
@@ -328,14 +325,21 @@
 <!--                android:fitsSystemWindows="true"-->
 <!--                android:layout_height="@dimen/_300sdp"/>-->
 
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/white">
 
                     <com.github.barteksc.pdfviewer.PDFView
                         android:id="@+id/pdf_view"
                         android:layout_width="match_parent"
                         android:fitsSystemWindows="true"
-                        android:layout_height="800dp"/>
+                        android:scrollbars="vertical"
+                        android:nestedScrollingEnabled="true"
+                        android:layout_height="@dimen/_400sdp"/>
+            </ScrollView>
+
         </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnPrintPDF"
             android:layout_width="match_parent"
