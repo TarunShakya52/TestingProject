@@ -45,12 +45,24 @@
         android:theme="@style/Theme.DemoApplication"
         tools:targetApi="32">
         <activity
+            android:name=".ShowInvoice_Activity"
+            android:exported="true">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
+        <activity
             android:name=".XMLtoPDF_Activity"
             android:exported="true">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
-
         </activity>
         <activity
             android:name=".InvoiceAnother_activity"
@@ -58,8 +70,6 @@
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
-
-
         </activity>
         <activity
             android:name=".MobilityActivity"
@@ -89,7 +99,6 @@
                 android:name="android.app.lib_name"
                 android:value="" />
 
-
         </activity>
 
         <provider
@@ -108,12 +117,6 @@
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
 
         </activity>
         <activity

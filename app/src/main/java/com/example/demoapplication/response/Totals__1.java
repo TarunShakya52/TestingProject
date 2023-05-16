@@ -1,9 +1,12 @@
 package com.example.demoapplication.response;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Totals__1 {
+public class Totals__1 implements Parcelable {
 
     @SerializedName("taxable_value")
     @Expose
@@ -70,5 +73,43 @@ public class Totals__1 {
 
     public void setTotalValue(Double totalValue) {
         this.totalValue = totalValue;
+    }
+
+    // Parcelable implementation
+
+    protected Totals__1(Parcel in) {
+        taxableValue = in.readDouble();
+        igstValue = in.readDouble();
+        cgstValue = in.readDouble();
+        sgstValue = in.readDouble();
+        cessValue = in.readDouble();
+        totalValue = in.readDouble();
+    }
+
+    public static final Creator<Totals__1> CREATOR = new Creator<Totals__1>() {
+        @Override
+        public Totals__1 createFromParcel(Parcel in) {
+            return new Totals__1(in);
+        }
+
+        @Override
+        public Totals__1[] newArray(int size) {
+            return new Totals__1[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeDouble(taxableValue);
+        dest.writeDouble(igstValue);
+        dest.writeDouble(cgstValue);
+        dest.writeDouble(sgstValue);
+        dest.writeDouble(cessValue);
+        dest.writeDouble(totalValue);
     }
 }

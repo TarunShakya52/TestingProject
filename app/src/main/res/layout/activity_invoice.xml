@@ -335,6 +335,7 @@
                         android:layout_width="match_parent"
                         android:fitsSystemWindows="true"
                         android:scrollbars="vertical"
+                        android:screenReaderFocusable="false"
                         android:nestedScrollingEnabled="true"
                         android:layout_height="@dimen/_400sdp"/>
             </ScrollView>

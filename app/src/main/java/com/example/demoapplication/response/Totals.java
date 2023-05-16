@@ -1,9 +1,12 @@
 package com.example.demoapplication.response;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Totals {
+public class Totals implements Parcelable {
     @SerializedName("quantity")
     @Expose
     private Integer quantity;
@@ -25,6 +28,16 @@ public class Totals {
     @SerializedName("cess_value")
     @Expose
     private Double cessValue;
+
+    public Totals(Integer quantity, Double itemValue, Double taxableValue, Double igstValue, Double cgstValue, Double sgstValue, Double cessValue) {
+        this.quantity = quantity;
+        this.itemValue = itemValue;
+        this.taxableValue = taxableValue;
+        this.igstValue = igstValue;
+        this.cgstValue = cgstValue;
+        this.sgstValue = sgstValue;
+        this.cessValue = cessValue;
+    }
 
     public Integer getQuantity() {
         return quantity;
@@ -81,4 +94,42 @@ public class Totals {
     public void setCessValue(Double cessValue) {
         this.cessValue = cessValue;
     }
+
+    protected Totals(Parcel in) {
+        quantity = in.readInt();
+        itemValue = in.readDouble();
+        taxableValue = in.readDouble();
+        igstValue = in.readDouble();
+        cgstValue = in.readDouble();
+        sgstValue = in.readDouble();
+        cessValue = in.readDouble();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(quantity);
+        dest.writeDouble(itemValue);
+        dest.writeDouble(taxableValue);
+        dest.writeDouble(igstValue);
+        dest.writeDouble(cgstValue);
+        dest.writeDouble(sgstValue);
+        dest.writeDouble(cessValue);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Totals> CREATOR = new Creator<Totals>() {
+        @Override
+        public Totals createFromParcel(Parcel in) {
+            return new Totals(in);
+        }
+
+        @Override
+        public Totals[] newArray(int size) {
+            return new Totals[size];
+        }
+    };
 }

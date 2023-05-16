@@ -9,8 +9,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
@@ -26,7 +24,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.FileProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.demoapplication.api.GetRequest;
 import com.example.demoapplication.api.PostRequest;
@@ -36,6 +33,7 @@ import com.example.demoapplication.response.KitInvoiceResponse;
 import com.example.demoapplication.response.SezAddressGetResponse;
 import com.example.tscdll.TSCUSBActivity;
 import com.github.barteksc.pdfviewer.PDFView;
+import com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener;
 import com.google.android.material.button.MaterialButton;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -45,7 +43,6 @@ import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.kernel.xmp.impl.Utils;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Paragraph;
@@ -61,7 +58,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Objects;
@@ -89,7 +85,7 @@ public class InvoiceActivity extends AppCompatActivity {
     private static final int TSC_VENDOR_ID = 0x0BB4;
     private static final int TSC_PRODUCT_ID = 0x0303;
     String stitle,spos,sgst,sstatecode,saddresss,btitle,bpos,bgst,bstatecode,baddresss;
-    private KitInvoiceResponse response;
+//    private KitInvoiceResponse response;
     private String arrShipping[];
     private String arrBilling[];
     SharedPreferences prefs;
@@ -99,6 +95,8 @@ public class InvoiceActivity extends AppCompatActivity {
     private SezAddressGetResponse sezAddressGetResponse;
     Gson gson = new Gson();
     int table2Count,taxTableCount;
+    private DataInvoiceKit dataInvoiceKit;
+    private Intent intent;
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +111,8 @@ public class InvoiceActivity extends AppCompatActivity {
         editor.putString("gsonShippingAddress",null);
         editor.apply();
 
+        intent = getIntent();
+        dataInvoiceKit = intent.getParcelableExtra("invoiceDetail");
 
 
         getSezAddress();
@@ -171,7 +171,7 @@ public class InvoiceActivity extends AppCompatActivity {
                         if (mUsbManager.hasPermission(device)) {
                             tscusbActivity.openport(mUsbManager, device);
 
-                            tscusbActivity.setup(70, 50, 4, 4, 0, 0, 0);
+                            tscusbActivity.setup(90, 100, 4, 4, 0, 0, 0);
 
                             tscusbActivity.sendcommand("PDF-IMAGE\n");
 
@@ -185,7 +185,7 @@ public class InvoiceActivity extends AppCompatActivity {
 //                    tscusbActivity.printPDFbyFile(file,30,20,90);
 
                             try (InputStream is = new FileInputStream(file)) {
-                                tscusbActivity.printPDFbyFile(file, 0, 0, 70);
+                                tscusbActivity.printPDFbyFile(file, 0, 0, 90);
                                 tscusbActivity.sendcommand("PRINT\n");
                             } catch (IOException e) {
                                 e.printStackTrace();
@@ -217,18 +217,18 @@ public class InvoiceActivity extends AppCompatActivity {
             @Override
             public void onPostExecuteConcluded(String result) {
 
-                Log.d("ResultCheck", "=" + result);
+                Log.d("ResultCheckinvoice", "=" + result);
                 try {
                     if (result != null) {
                         GsonBuilder gsonBuilder = new GsonBuilder();
                         gsonBuilder.setDateFormat("M/d/yy hh:mm a");
                         Gson gson = gsonBuilder.create();
-                        response = gson.fromJson(result, KitInvoiceResponse.class);
+                        KitInvoiceResponse response = gson.fromJson(result, KitInvoiceResponse.class);
                         try{
 //                            checkIntent();
                             createPDF(response.getData(), shippingDetails, billingDetails);
                         }catch (FileNotFoundException e){
-                            e.printStackTrace();
+                           Log.e("checkeror",e.getMessage());
                         }
                     }
                 } catch (Exception e) {
@@ -239,9 +239,8 @@ public class InvoiceActivity extends AppCompatActivity {
 
             }
         });
-
-        String token = "eyJhbGciOiJIUzM4NCIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI1OGNkYjk4MC0yNzU4LTQxOGEtODY4MC1jZmU1MTAzMGU1ZDIiLCJpZCI6MjExLCJtb2JpbGUiOiI4MDg4NDAzNDMyIiwicm9sZSI6IkFETUlOIiwicGVybWlzc2lvbnMiOlsidm1fYWxsb3dlZCIsInByb2R1Y3RfYWxsb3dlZCIsIm9yZGVyc19hbGxvd2VkIiwidXNlcl9hbGxvd2VkIiwidm1fc2V0dGluZ3MiLCJ2bV9zYWxlcyIsIm5vdGlmaWNhdGlvbl9lbmFibGVkIiwiYWJzb2x1dGVfc2FsZXMiLCJ2ZW5kb3JfYWxsb3dlZCIsIndhbGxldF9oaXN0b3J5Iiwidmlld19icmFuZHMiLCJjcmVhdGVfYnJhbmQiLCJ2aWV3X2Jhc2UiLCJ2aWV3X3ZhcmlhbnRzIiwibWFwX3ZlbmRvciIsInZpZXdfcHJvZHVjdHMiLCJjcmVhdGVfcHJvZHVjdHMiLCJjcmVhdGVfYmFzZSIsImNyZWF0ZV92YXJpYW50IiwiY3JlYXRlX3ZlbmRvciIsInZpZXdfdmVuZG9yIiwidmlld191c2VycyIsIm1hcF91c2VyIiwiYXR0ZW5kYW5jZSIsImtpdHRpbmdfcmVmaWxsaW5nIiwiYXVkaXRfbWFjaGluZSIsInN0b2NraW5nIiwic3BhcmVfcGFydHMiLCJlX2RhYWxjaGluaSIsInNsb3RfdXRpbGl6YXRpb24iLCJoZWFsdGhfYWxlcnQiLCJ0cm91Ymxlc2hvb3RfZ3VpZGUiLCJyYWlzZV90aWNrZXQiLCJzZWxmX2Fzc2Vzc21lbnQiLCJyZWNjZSIsInZtX2luc3RhbGxhdGlvbiIsInZpZXdfdGFnIiwiYWN0aXZhdGVfdGFnIiwibWVhbHNfbWVudSIsInZtX3BhcmFtZXRlcnMiLCJzdXBwb3J0X25vdGlmaWNhdGlvbiIsInNsb3RfcmVwYWlyIiwicXVpY2tfdW5ibG9jayIsInVuYmxvY2tfYWxsX3Nsb3RzIiwic2xvdF9yZXBvcnQiLCJwYXJ0bmVyX3JlY2hhcmdlIiwib3JkZXJfYXBwcm92ZSIsImJ1bGtfcHVyY2hhc2UiLCJtb2JpbGl0eV9yZWZpbGwiLCJtYXBfYnBfdXNlciIsInZpZXdfZnJhbmNoaXNlZSIsImNyZWF0ZV9mcmFuY2hpc2VlIiwidmlld19iYW5rIiwiY3JlYXRlX2JhbmsiLCJ2aWV3X3BsYXRmb3JtX2NoYXJnZSIsIm1hcF9wbGF0Zm9ybV9jaGFyZ2UiLCJjcmVhdGVfcGxhdGZvcm1fY2hhcmdlIiwibW9iaWxpdHlfY2hlY2tpbiIsImNyZWF0ZV9jb3Vwb24iLCJ2aWV3X2NvdXBvbiIsImJ1eV9hdF92cCIsIm1hcF9tYWNoaW5lcyIsInZpZXdfYnBfdXNlciIsInZtX2NyZWF0ZSIsInZtX3VwZGF0ZSIsInZtX3ZpZXciLCJjb2hvcnRfY3JlYXRlIiwiY29ob3J0X3ZpZXciLCJjb2hvcnRfbWFwX3VzZXIiLCJjb2hvcnRfbWFwX21hY2hpbmUiLCJiYW5uZXJfY3JlYXRlIiwiYXBwcm92ZV9hdHRlbmRhbmNlIiwic2xvdF9vcGVyYXRpb24iLCJyZWZ1bmRfcmV2Il0sImlhdCI6MTY4MzcxMjE3NiwiZXhwIjoxNjgzNzk4NTc2fQ.tOFPJTfLI8BhpZirc_Na3PDrFBvu37D_ggiFepmfY4MVYyCklOweik9b4X8rYXV6";
-        String url = "https://api-stage.daalchini.co.in/partner/api/v2/warehouse/1/invoice/814";
+        String token = "eyJhbGciOiJIUzM4NCIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIyYTM2YThmNC04YTYwLTRjMTEtYmE4YS1hYWI0MGVlNjEyNzQiLCJpZCI6MjExLCJtb2JpbGUiOiI4MDg4NDAzNDMyIiwicm9sZSI6IkFETUlOIiwicGVybWlzc2lvbnMiOlsidm1fYWxsb3dlZCIsInByb2R1Y3RfYWxsb3dlZCIsIm9yZGVyc19hbGxvd2VkIiwidXNlcl9hbGxvd2VkIiwidm1fc2V0dGluZ3MiLCJ2bV9zYWxlcyIsIm5vdGlmaWNhdGlvbl9lbmFibGVkIiwiYWJzb2x1dGVfc2FsZXMiLCJ2ZW5kb3JfYWxsb3dlZCIsIndhbGxldF9oaXN0b3J5Iiwidmlld19icmFuZHMiLCJjcmVhdGVfYnJhbmQiLCJ2aWV3X2Jhc2UiLCJ2aWV3X3ZhcmlhbnRzIiwibWFwX3ZlbmRvciIsInZpZXdfcHJvZHVjdHMiLCJjcmVhdGVfcHJvZHVjdHMiLCJjcmVhdGVfYmFzZSIsImNyZWF0ZV92YXJpYW50IiwiY3JlYXRlX3ZlbmRvciIsInZpZXdfdmVuZG9yIiwidmlld191c2VycyIsIm1hcF91c2VyIiwiYXR0ZW5kYW5jZSIsImtpdHRpbmdfcmVmaWxsaW5nIiwiYXVkaXRfbWFjaGluZSIsInN0b2NraW5nIiwic3BhcmVfcGFydHMiLCJlX2RhYWxjaGluaSIsInNsb3RfdXRpbGl6YXRpb24iLCJoZWFsdGhfYWxlcnQiLCJ0cm91Ymxlc2hvb3RfZ3VpZGUiLCJyYWlzZV90aWNrZXQiLCJzZWxmX2Fzc2Vzc21lbnQiLCJyZWNjZSIsInZtX2luc3RhbGxhdGlvbiIsInZpZXdfdGFnIiwiYWN0aXZhdGVfdGFnIiwibWVhbHNfbWVudSIsInZtX3BhcmFtZXRlcnMiLCJzdXBwb3J0X25vdGlmaWNhdGlvbiIsInNsb3RfcmVwYWlyIiwicXVpY2tfdW5ibG9jayIsInVuYmxvY2tfYWxsX3Nsb3RzIiwic2xvdF9yZXBvcnQiLCJwYXJ0bmVyX3JlY2hhcmdlIiwib3JkZXJfYXBwcm92ZSIsImJ1bGtfcHVyY2hhc2UiLCJtb2JpbGl0eV9yZWZpbGwiLCJtYXBfYnBfdXNlciIsInZpZXdfZnJhbmNoaXNlZSIsImNyZWF0ZV9mcmFuY2hpc2VlIiwidmlld19iYW5rIiwiY3JlYXRlX2JhbmsiLCJ2aWV3X3BsYXRmb3JtX2NoYXJnZSIsIm1hcF9wbGF0Zm9ybV9jaGFyZ2UiLCJjcmVhdGVfcGxhdGZvcm1fY2hhcmdlIiwibW9iaWxpdHlfY2hlY2tpbiIsImNyZWF0ZV9jb3Vwb24iLCJ2aWV3X2NvdXBvbiIsImJ1eV9hdF92cCIsIm1hcF9tYWNoaW5lcyIsInZpZXdfYnBfdXNlciIsInZtX2NyZWF0ZSIsInZtX3VwZGF0ZSIsInZtX3ZpZXciLCJjb2hvcnRfY3JlYXRlIiwiY29ob3J0X3ZpZXciLCJjb2hvcnRfbWFwX3VzZXIiLCJjb2hvcnRfbWFwX21hY2hpbmUiLCJiYW5uZXJfY3JlYXRlIiwiYXBwcm92ZV9hdHRlbmRhbmNlIiwic2xvdF9vcGVyYXRpb24iLCJyZWZ1bmRfcmV2Il0sImlhdCI6MTY4Mzk2OTg2MSwiZXhwIjoxNjg0MDU2MjYxfQ.xAl1rHaFtpctK61E3B47osk_v3edIfYvvWfnlLosZxibppJEWkTkRYwBUOfMB3w6";
+        String url = "https://api-stage.daalchini.co.in/partner/api/v2/warehouse/1/invoice/868";
         aTask.execute(url,"",token);
 
     }
@@ -391,13 +390,15 @@ public class InvoiceActivity extends AppCompatActivity {
 
         taxTable.setMarginTop(40.0f);
 //        addColumnHeadersTax(taxTable);
+        int taxCount = 0;
         for (int j = 0 ; j<response.getTaxDetails().getTaxes().size(); j++){
 //            if (checkForHeaders){
-            for (int i =0; i<=0;i++){
+           while (taxCount < 1){
                 taxTable.addCell(new Cell().add(new Paragraph("ID").setTextAlignment(TextAlignment.CENTER)));
                 taxTable.addCell(new Cell().add(new Paragraph("I GST").setTextAlignment(TextAlignment.CENTER)));
                 taxTable.addCell(new Cell().add(new Paragraph("Cg St").setTextAlignment(TextAlignment.CENTER)));
                 taxTable.addCell(new Cell().add(new Paragraph("Sg St").setTextAlignment(TextAlignment.CENTER)));
+                taxCount++;
             }
 //                checkForHeaders = false;
 //            }
@@ -429,8 +430,8 @@ public class InvoiceActivity extends AppCompatActivity {
         Cell shippingCell = new Cell();
         tableDeliveryAddress.addCell(shippingCell.setPadding(10f).setBackgroundColor(new DeviceRgb(107, 76, 82)));
         tableDeliveryAddress.addCell(cell.setPadding(10f));
-        Paragraph p1 = new Paragraph("Invoice No : "+response.getData().getInvoiceNumber());
-        Paragraph p2 = new Paragraph("Date: "+response.getData().getDate());
+        Paragraph p1 = new Paragraph("Invoice No : "+dataInvoiceKit.getInvoiceNumber());
+        Paragraph p2 = new Paragraph("Date: "+dataInvoiceKit.getDate());
         Paragraph p3 = new Paragraph(billingDetails.getTitle()).setBold().setFontSize(15).setMarginTop(10);
         Paragraph p4 = new Paragraph(billingDetails.getAddress());
         Paragraph p5 = new Paragraph(billingDetails.getSupply_place()+" - "+billingDetails.getState_code());
@@ -444,7 +445,7 @@ public class InvoiceActivity extends AppCompatActivity {
         image.setWidth(20);
         image.setHeight(15);
 
-        shippingCell.add(new Paragraph("Delivery Address").setMarginLeft(20.0f).setBold().setFontSize(17).setPadding(5f).setFontColor(new DeviceRgb(255,255,255)));
+        shippingCell.add(new Paragraph("Delivery Address").setBold().setFontSize(17).setPadding(5f).setFontColor(new DeviceRgb(255,255,255)));
         cell.add(p1);
         cell.add(p2);
         cell.add(p3);
@@ -458,8 +459,8 @@ public class InvoiceActivity extends AppCompatActivity {
         Cell shippingCell = new Cell();
         tableShippingAddress.addCell(shippingCell.setPadding(10f).setBackgroundColor(new DeviceRgb(107, 76, 82)));
         tableShippingAddress.addCell(cell.setPadding(10f));
-        Paragraph p1 = new Paragraph("Invoice No : "+response.getData().getInvoiceNumber());
-        Paragraph p2 = new Paragraph("Date: "+response.getData().getDate());
+        Paragraph p1 = new Paragraph("Invoice No : "+dataInvoiceKit.getInvoiceNumber());
+        Paragraph p2 = new Paragraph("Date: "+dataInvoiceKit.getDate());
         Paragraph p3 = new Paragraph(shippingDetails.getTitle()).setBold().setFontSize(15).setMarginTop(10);
         Paragraph p4 = new Paragraph(shippingDetails.getAddress());
         Paragraph p5 = new Paragraph(shippingDetails.getSupply_place()+ "-" +shippingDetails.getState_code());
@@ -514,8 +515,8 @@ public class InvoiceActivity extends AppCompatActivity {
 
             Cell cell = new Cell();
             table1.addCell(cell.setPadding(10f));
-            Paragraph p1 = new Paragraph("Invoice No : "+response.getData().getInvoiceNumber());
-            Paragraph p2 = new Paragraph("Date: "+response.getData().getDate());
+            Paragraph p1 = new Paragraph("Invoice No : "+dataInvoiceKit.getInvoiceNumber());
+            Paragraph p2 = new Paragraph("Date: "+dataInvoiceKit.getDate());
             Paragraph p3 = new Paragraph(sezAddressGetResponse.getData().getWarehouseLocation().getTitle()).setBold().setFontSize(15).setMarginTop(10);
             Paragraph p4 = new Paragraph(sezAddressGetResponse.getData().getWarehouseLocation().getAddress());
             Paragraph p5 = new Paragraph("GSTIN - "+sezAddressGetResponse.getData().getWarehouseLocation().getGstin());
@@ -541,10 +542,23 @@ public class InvoiceActivity extends AppCompatActivity {
         PDFView pdfView = findViewById(R.id.pdf_view);
         if (file.exists()) {
             Uri uri = Uri.fromFile(file);
-            pdfView.fromUri(uri).load();
+//            pdfView.fromUri(uri).load();
+            pdfView.fromUri(uri)
+                    .enableSwipe(true)
+                    .swipeHorizontal(false)
+                    .enableDoubletap(false)
+                    .defaultPage(0)
+                    .onLoad(new OnLoadCompleteListener() {
+                        @Override
+                        public void loadComplete(int nbPages) {
+                            Toast.makeText(InvoiceActivity.this,"Invoice is loaded successfully",Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .load();
         } else {
-            // Handle file not found
+            Toast.makeText(InvoiceActivity.this,"File not Found",Toast.LENGTH_SHORT).show();
         }
+
     }
 
 //    private void printPDF() {
@@ -591,7 +605,16 @@ public class InvoiceActivity extends AppCompatActivity {
             billingDetails = gson.fromJson(jsonStringBilling, AddSEZAdress_Request.class);
             Log.e("billingDetailssss", billingDetails.getTitle() + " " + billingDetails.getAddress() + " " + billingDetails.getSupply_place() + " " + billingDetails.getState_code() + " " + billingDetails.getGstin());
         }
-        kitInvoiceApi();
+//        kitInvoiceApi();
+
+        if (sezAddressGetResponse !=null) {
+            try {
+                createPDF(dataInvoiceKit, shippingDetails, billingDetails);
+            } catch (Exception e) {
+                Log.e("checkerorgjg", e.getMessage());
+            }
+        }
+
 
         cvShipping.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -681,18 +704,19 @@ public class InvoiceActivity extends AppCompatActivity {
                         gsonBuilder.setDateFormat("M/d/yy hh:mm a");
                         Gson gson = gsonBuilder.create();
                         sezAddressGetResponse = gson.fromJson(result, SezAddressGetResponse.class);
-                        kitInvoiceApi();
+//                        kitInvoiceApi();
+                        Log.e("dataa",dataInvoiceKit.getInvoiceNumber());
+                        createPDF(dataInvoiceKit, shippingDetails, billingDetails);
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Log.e("checkeror",e.getMessage());
 
 
                 }
 
             }
         });
-
-        String token = "eyJhbGciOiJIUzM4NCIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI1OGNkYjk4MC0yNzU4LTQxOGEtODY4MC1jZmU1MTAzMGU1ZDIiLCJpZCI6MjExLCJtb2JpbGUiOiI4MDg4NDAzNDMyIiwicm9sZSI6IkFETUlOIiwicGVybWlzc2lvbnMiOlsidm1fYWxsb3dlZCIsInByb2R1Y3RfYWxsb3dlZCIsIm9yZGVyc19hbGxvd2VkIiwidXNlcl9hbGxvd2VkIiwidm1fc2V0dGluZ3MiLCJ2bV9zYWxlcyIsIm5vdGlmaWNhdGlvbl9lbmFibGVkIiwiYWJzb2x1dGVfc2FsZXMiLCJ2ZW5kb3JfYWxsb3dlZCIsIndhbGxldF9oaXN0b3J5Iiwidmlld19icmFuZHMiLCJjcmVhdGVfYnJhbmQiLCJ2aWV3X2Jhc2UiLCJ2aWV3X3ZhcmlhbnRzIiwibWFwX3ZlbmRvciIsInZpZXdfcHJvZHVjdHMiLCJjcmVhdGVfcHJvZHVjdHMiLCJjcmVhdGVfYmFzZSIsImNyZWF0ZV92YXJpYW50IiwiY3JlYXRlX3ZlbmRvciIsInZpZXdfdmVuZG9yIiwidmlld191c2VycyIsIm1hcF91c2VyIiwiYXR0ZW5kYW5jZSIsImtpdHRpbmdfcmVmaWxsaW5nIiwiYXVkaXRfbWFjaGluZSIsInN0b2NraW5nIiwic3BhcmVfcGFydHMiLCJlX2RhYWxjaGluaSIsInNsb3RfdXRpbGl6YXRpb24iLCJoZWFsdGhfYWxlcnQiLCJ0cm91Ymxlc2hvb3RfZ3VpZGUiLCJyYWlzZV90aWNrZXQiLCJzZWxmX2Fzc2Vzc21lbnQiLCJyZWNjZSIsInZtX2luc3RhbGxhdGlvbiIsInZpZXdfdGFnIiwiYWN0aXZhdGVfdGFnIiwibWVhbHNfbWVudSIsInZtX3BhcmFtZXRlcnMiLCJzdXBwb3J0X25vdGlmaWNhdGlvbiIsInNsb3RfcmVwYWlyIiwicXVpY2tfdW5ibG9jayIsInVuYmxvY2tfYWxsX3Nsb3RzIiwic2xvdF9yZXBvcnQiLCJwYXJ0bmVyX3JlY2hhcmdlIiwib3JkZXJfYXBwcm92ZSIsImJ1bGtfcHVyY2hhc2UiLCJtb2JpbGl0eV9yZWZpbGwiLCJtYXBfYnBfdXNlciIsInZpZXdfZnJhbmNoaXNlZSIsImNyZWF0ZV9mcmFuY2hpc2VlIiwidmlld19iYW5rIiwiY3JlYXRlX2JhbmsiLCJ2aWV3X3BsYXRmb3JtX2NoYXJnZSIsIm1hcF9wbGF0Zm9ybV9jaGFyZ2UiLCJjcmVhdGVfcGxhdGZvcm1fY2hhcmdlIiwibW9iaWxpdHlfY2hlY2tpbiIsImNyZWF0ZV9jb3Vwb24iLCJ2aWV3X2NvdXBvbiIsImJ1eV9hdF92cCIsIm1hcF9tYWNoaW5lcyIsInZpZXdfYnBfdXNlciIsInZtX2NyZWF0ZSIsInZtX3VwZGF0ZSIsInZtX3ZpZXciLCJjb2hvcnRfY3JlYXRlIiwiY29ob3J0X3ZpZXciLCJjb2hvcnRfbWFwX3VzZXIiLCJjb2hvcnRfbWFwX21hY2hpbmUiLCJiYW5uZXJfY3JlYXRlIiwiYXBwcm92ZV9hdHRlbmRhbmNlIiwic2xvdF9vcGVyYXRpb24iLCJyZWZ1bmRfcmV2Il0sImlhdCI6MTY4MzcxMjE3NiwiZXhwIjoxNjgzNzk4NTc2fQ.tOFPJTfLI8BhpZirc_Na3PDrFBvu37D_ggiFepmfY4MVYyCklOweik9b4X8rYXV6";
+        String token = "eyJhbGciOiJIUzM4NCIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIwNGE5MWJhZS04NzcyLTQ4MmMtODc2YS1jOTYwN2NlMzhhZmIiLCJpZCI6MjExLCJtb2JpbGUiOiI4MDg4NDAzNDMyIiwicm9sZSI6IkFETUlOIiwicGVybWlzc2lvbnMiOlsidm1fYWxsb3dlZCIsInByb2R1Y3RfYWxsb3dlZCIsIm9yZGVyc19hbGxvd2VkIiwidXNlcl9hbGxvd2VkIiwidm1fc2V0dGluZ3MiLCJ2bV9zYWxlcyIsIm5vdGlmaWNhdGlvbl9lbmFibGVkIiwiYWJzb2x1dGVfc2FsZXMiLCJ2ZW5kb3JfYWxsb3dlZCIsIndhbGxldF9oaXN0b3J5Iiwidmlld19icmFuZHMiLCJjcmVhdGVfYnJhbmQiLCJ2aWV3X2Jhc2UiLCJ2aWV3X3ZhcmlhbnRzIiwibWFwX3ZlbmRvciIsInZpZXdfcHJvZHVjdHMiLCJjcmVhdGVfcHJvZHVjdHMiLCJjcmVhdGVfYmFzZSIsImNyZWF0ZV92YXJpYW50IiwiY3JlYXRlX3ZlbmRvciIsInZpZXdfdmVuZG9yIiwidmlld191c2VycyIsIm1hcF91c2VyIiwiYXR0ZW5kYW5jZSIsImtpdHRpbmdfcmVmaWxsaW5nIiwiYXVkaXRfbWFjaGluZSIsInN0b2NraW5nIiwic3BhcmVfcGFydHMiLCJlX2RhYWxjaGluaSIsInNsb3RfdXRpbGl6YXRpb24iLCJoZWFsdGhfYWxlcnQiLCJ0cm91Ymxlc2hvb3RfZ3VpZGUiLCJyYWlzZV90aWNrZXQiLCJzZWxmX2Fzc2Vzc21lbnQiLCJyZWNjZSIsInZtX2luc3RhbGxhdGlvbiIsInZpZXdfdGFnIiwiYWN0aXZhdGVfdGFnIiwibWVhbHNfbWVudSIsInZtX3BhcmFtZXRlcnMiLCJzdXBwb3J0X25vdGlmaWNhdGlvbiIsInNsb3RfcmVwYWlyIiwicXVpY2tfdW5ibG9jayIsInVuYmxvY2tfYWxsX3Nsb3RzIiwic2xvdF9yZXBvcnQiLCJwYXJ0bmVyX3JlY2hhcmdlIiwib3JkZXJfYXBwcm92ZSIsImJ1bGtfcHVyY2hhc2UiLCJtb2JpbGl0eV9yZWZpbGwiLCJtYXBfYnBfdXNlciIsInZpZXdfZnJhbmNoaXNlZSIsImNyZWF0ZV9mcmFuY2hpc2VlIiwidmlld19iYW5rIiwiY3JlYXRlX2JhbmsiLCJ2aWV3X3BsYXRmb3JtX2NoYXJnZSIsIm1hcF9wbGF0Zm9ybV9jaGFyZ2UiLCJjcmVhdGVfcGxhdGZvcm1fY2hhcmdlIiwibW9iaWxpdHlfY2hlY2tpbiIsImNyZWF0ZV9jb3Vwb24iLCJ2aWV3X2NvdXBvbiIsImJ1eV9hdF92cCIsIm1hcF9tYWNoaW5lcyIsInZpZXdfYnBfdXNlciIsInZtX2NyZWF0ZSIsInZtX3VwZGF0ZSIsInZtX3ZpZXciLCJjb2hvcnRfY3JlYXRlIiwiY29ob3J0X3ZpZXciLCJjb2hvcnRfbWFwX3VzZXIiLCJjb2hvcnRfbWFwX21hY2hpbmUiLCJiYW5uZXJfY3JlYXRlIiwiYXBwcm92ZV9hdHRlbmRhbmNlIiwic2xvdF9vcGVyYXRpb24iLCJyZWZ1bmRfcmV2b2tlIiwic2xvdF9yZXBvcnRfaW52ZW50b3J5IiwicmVmaWxsX2xvc3Nfb3ZlcnJpZGUiXSwiaWF0IjoxNjg0MjIwOTY1LCJleHAiOjE2ODQzMDczNjV9.qVRQJ3VSEUd3drXSN5V91DGqaMIXimblkLjFL7FBON33peFNuhf6fKMGVMjiA7z9";
         String url = "https://api-stage.daalchini.co.in/partner/api/v2/warehouse/1/sez-location";
         aTask.execute(url,"","",token);
     }

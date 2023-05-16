@@ -1,9 +1,12 @@
 package com.example.demoapplication.response;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Tax {
+public class Tax implements Parcelable {
     @SerializedName("gst_rate")
     @Expose
     private Double gstRate;
@@ -80,5 +83,45 @@ public class Tax {
 
     public void setTotalValue(Double totalValue) {
         this.totalValue = totalValue;
+    }
+
+    // Required method to create the parcel
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeDouble(this.gstRate);
+        dest.writeDouble(this.taxableValue);
+        dest.writeDouble(this.igstValue);
+        dest.writeDouble(this.cgstValue);
+        dest.writeDouble(this.sgstValue);
+        dest.writeDouble(this.cessValue);
+        dest.writeDouble(this.totalValue);
+    }
+
+    // Required method to recreate the object from the parcel
+    private Tax(Parcel in) {
+        this.gstRate = in.readDouble();
+        this.taxableValue = in.readDouble();
+        this.igstValue = in.readDouble();
+        this.cgstValue = in.readDouble();
+        this.sgstValue = in.readDouble();
+        this.cessValue = in.readDouble();
+        this.totalValue = in.readDouble();
+    }
+
+    public static final Parcelable.Creator<Tax> CREATOR = new Parcelable.Creator<Tax>() {
+        @Override
+        public Tax createFromParcel(Parcel source) {
+            return new Tax(source);
+        }
+
+        @Override
+        public Tax[] newArray(int size) {
+            return new Tax[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 }

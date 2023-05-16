@@ -1,12 +1,10 @@
 package com.example.demoapplication.response;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class StatusResponse implements Parcelable {
+public class StatusWarehouseAssociated {
+
     @SerializedName("success")
     @Expose
     private Boolean success;
@@ -51,36 +49,4 @@ public class StatusResponse implements Parcelable {
     public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
     }
-
-    private StatusResponse(Parcel in) {
-        success = in.readByte() != 0;
-        code = in.readString();
-        message = in.readString();
-        timestamp = in.readString();
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeByte((byte) (success ? 1 : 0));
-        dest.writeString(code);
-        dest.writeString(message);
-        dest.writeString(timestamp);
-    }
-
-    public static final Creator<StatusResponse> CREATOR = new Creator<StatusResponse>() {
-        @Override
-        public StatusResponse createFromParcel(Parcel in) {
-            return new StatusResponse(in);
-        }
-
-        @Override
-        public StatusResponse[] newArray(int size) {
-            return new StatusResponse[size];
-        }
-    };
 }
