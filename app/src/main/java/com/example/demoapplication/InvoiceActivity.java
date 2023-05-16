@@ -681,7 +681,7 @@ public class InvoiceActivity extends AppCompatActivity {
 
             }
         }else {
-            Toast.makeText(InvoiceActivity.this,"Please Select Shipping and Billing Address",Toast.LENGTH_SHORT).show();
+            Toast.makeText(InvoiceActivity.this,"Please Select Shipping and Billing Address to Print",Toast.LENGTH_SHORT).show();
         }
     }
 
